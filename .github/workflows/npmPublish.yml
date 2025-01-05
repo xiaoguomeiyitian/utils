@@ -1,0 +1,43 @@
+name: npm publish public
+
+on:
+  workflow_dispatch:
+    inputs:
+      version_type:
+        description: '版本更新类型'
+        required: true
+        type: choice
+        options:
+          - patch
+          - minor
+          - major
+        default: 'patch'
+        
+permissions:
+  contents: write
+  pages: write
+  id-token: write        
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: 更新版本号 编译代码
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          npm version ${{ github.event.inputs.version_type }}
+          git push
+          npm install
+          npm run build
+          chmod +x ./dist/cli.js
+          
+      - name: 设置 npm token
+        run: |
+            echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > ~/.npmrc
+
+      - name: 发布到 npm
+        run: npm publish --access public 
