@@ -1,0 +1,27 @@
+{
+  "name": "@xiaoguomeiyitian/utils",
+  "version": "0.0.0",
+  "main": "dist/index.js",
+  "types": "types/utils.d.ts",
+  "bin": {
+    "util": "./dist/cli.js"
+  },
+  "files": [
+    "types/lib.d.ts",
+    "dist/index.js",
+    "dist/cli.js",
+    "dist/utils.js"
+  ],
+  "scripts": {
+    "pull": "git stash && git pull && git stash pop",
+    "build": "tsc --build --diagnostics",
+    "pack": "npm pack --pack-destination",
+    "bp": "npm run build && npm run pack"
+  },
+  "bundleDependencies": false,
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "typescript": "^5.7.2"
+  },
+  "dependencies": {}
+}
