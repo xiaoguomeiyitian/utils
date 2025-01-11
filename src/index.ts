@@ -1,1 +1,1 @@
-export const utils = require("./utils");
+export const { copyDir, delFiles, setValueByPath, getValueByPath, normalizePath, loadAllFile } = require("./utils");
