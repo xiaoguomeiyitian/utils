@@ -7,7 +7,7 @@
     "util": "./dist/cli.js"
   },
   "files": [
-    "types/lib.d.ts",
+    "types/utils.d.ts",
     "dist/index.js",
     "dist/cli.js",
     "dist/utils.js"
