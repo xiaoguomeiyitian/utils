@@ -1,6 +1,6 @@
 {
   "name": "@xiaoguomeiyitian/utils",
-  "version": "0.0.3",
+  "version": "0.1.0",
   "main": "dist/index.js",
   "types": "types/utils.d.ts",
   "bin": {
