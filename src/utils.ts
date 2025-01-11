@@ -1,3 +1,4 @@
+import fs from "fs";
 import path from "path";
 import fsPromises from 'fs/promises';
 
@@ -47,4 +48,63 @@ export async function delFiles(dir: string, exts: string[] = []) {
     await Promise.all(deletePromises);
     // 删除当前目录，如果为空
     if ((await fsPromises.readdir(dir)).length === 0) await fsPromises.rmdir(dir);
+}
+/** 递归设置属性 */
+export function setValueByPath(target: any, path: string[], value: any, type: "inc" | "set" | "unset" | "push" | "pull" = "set", ext: { min?: number, max?: number, leng?: number } = {}): void {
+    const key = path[0];
+    if (path.length === 1) {
+        switch (type) {
+            case "inc":
+                if (typeof target[key] != "number") { throw new Error("inc 操作的属性不为数字"); };
+                let val = target[key] || 0;
+                val += value;
+                val = Math.max(val, typeof ext.min === 'number' ? ext.min : -Infinity);
+                val = Math.min(val, typeof ext.max === 'number' ? ext.max : Infinity);
+                target[key] = val;
+                break;
+            case "set":
+                target[key] = value;
+                break;
+            case "unset":
+                delete target[key];
+                break;
+            case "push":
+                if (!Array.isArray(target[key])) { throw new Error("push 操作的属性不为数组"); };
+                target[key] = [...(target[key]), value].slice(typeof ext.leng === 'number' ? -Math.abs(ext.leng) : -Infinity);
+                break;
+            case "pull":
+                if (!Array.isArray(target[key])) { throw new Error("push 操作的属性不为数组"); }
+                const index = target[key].indexOf(value);
+                index > -1 && target[key].splice(index, 1);
+                break;
+        }
+    } else {
+        target[key] = target[key] || {};
+        setValueByPath(target[key], path.slice(1), value, type, ext);
+    }
+}
+/** 递归获取属性值 */
+export function getValueByPath(target: any, path: string[]): any {
+    const key = path[0];
+    if (path.length === 1) {
+        return target[key];
+    } else {
+        if (!target[key]) return void 0;
+        return getValueByPath(target[key], path.slice(1));
+    }
+}
+/** 统一路径分隔符 */
+export function normalizePath(fromPath: string, toPath: string) { return path.relative(fromPath, toPath).split(path.sep).join('/'); }
+/** 加载某个目录所有文件 */
+export function loadAllFile(source: string, fileList: string[] = []) {
+    const files = fs.readdirSync(source);
+    files.forEach((file) => {
+        const srcPath = source + "/" + file;
+        if (fs.statSync(srcPath).isDirectory()) {
+            loadAllFile(srcPath, fileList);
+        } else {
+            fileList.push(srcPath);
+        }
+    })
+    return fileList;
 }
