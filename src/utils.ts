@@ -1,5 +1,7 @@
 import fs from "fs";
 import path from "path";
+import zlib from 'zlib';
+import util from 'util';
 import fsPromises from 'fs/promises';
 
 /** cwd路径 */
@@ -121,4 +123,19 @@ export function parseArgs(): any {
         }
     }
     return args;
+}
+/** 使用 brotli 算法压缩 wasm 文件 */
+export async function compressWasmFile(inputPath: string, outputPath?: string, params?: any) {
+    const brotliCompress = util.promisify(zlib.brotliCompress);
+    const wasmBuffer = fs.readFileSync(inputPath);
+    const compressedBuffer = await brotliCompress(wasmBuffer, {
+        params: params || {
+            [zlib.constants.BROTLI_PARAM_QUALITY]: 11,            // 最高质量
+            [zlib.constants.BROTLI_PARAM_LGWIN]: 24,             // 最大窗口大小
+            [zlib.constants.BROTLI_PARAM_MODE]: 2,               // 文本压缩模式
+            [zlib.constants.BROTLI_PARAM_SIZE_HINT]: wasmBuffer.length, // 文件大小提示
+            [zlib.constants.BROTLI_PARAM_LGBLOCK]: 24,           // 最大块大小
+        }
+    });
+    fs.writeFileSync(outputPath || `${inputPath}.br`, compressedBuffer);
 }

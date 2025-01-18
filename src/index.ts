@@ -6,5 +6,6 @@ export const {
     setValueByPath,
     getValueByPath,
     normalizePath,
-    loadAllFile
+    loadAllFile,
+    compressWasmFile,
 } = require("./utils");
