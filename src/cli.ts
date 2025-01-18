@@ -1,9 +1,7 @@
 #!/usr/bin/env node
 import path from 'path';
-import { copyDir, delFiles } from './utils';
+import { _cwdDir, copyDir, delFiles } from './utils';
 
-/** cwd路径 */
-const _cwdDir: string = process.env.pm_cwd || process.cwd();
 const cmd = process.argv[2];
 //拷贝文件或目录
 if (cmd == "copy") {

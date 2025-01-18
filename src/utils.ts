@@ -2,6 +2,8 @@ import fs from "fs";
 import path from "path";
 import fsPromises from 'fs/promises';
 
+/** cwd路径 */
+export const _cwdDir = process.env.pm_cwd || process.cwd();
 /** 拷贝文件或目录 */
 export async function copyDir(sourceDir: string, destDir: string, exts: string[] = []) {
     try { await fsPromises.access(sourceDir); } catch (err) { return; };
@@ -107,4 +109,16 @@ export function loadAllFile(source: string, fileList: string[] = []) {
         }
     })
     return fileList;
+}
+/** 解析命令行参数 -name value */
+export function parseArgs(): any {
+    const args = {};
+    const argv = process.argv;
+    for (let index = 0; index < argv.length; index++) {
+        const arg = argv[index];
+        if (arg.startsWith("-")) {
+            args[arg.substring(1)] = argv[index + 1];
+        }
+    }
+    return args;
 }
